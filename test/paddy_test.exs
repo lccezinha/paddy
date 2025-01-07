@@ -23,7 +23,7 @@ defmodule PaddyTest do
 
       with_mock Projects,
         pubsub_projects_topics_publish: fn _connection, _project_id, _topic_id, _params -> :ok end do
-        Paddy.publish(params)
+        Paddy.publish(Jason.encode!(params))
 
         assert called(Projects.pubsub_projects_topics_publish(:_, :_, :_, :_))
       end

@@ -42,7 +42,7 @@ defmodule Paddy do
   """
 
   def publish(data) do
-    encoded_data = encode_data(data)
+    encoded_data = Base.encode64(data)
     message = %Model.PubsubMessage{data: encoded_data}
     data_request = %Model.PublishRequest{messages: [message]}
 
@@ -50,13 +50,6 @@ defmodule Paddy do
       body: data_request
     )
   end
-
-  defp encode_data(data) do
-    data
-    |> Jason.encode!() # Converte o mapa para uma string JSON.
-    |> Base.encode64() # Codifica a string em Base64.
-  end
-  
 
   ### Disclaimer!
   #
