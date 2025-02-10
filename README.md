@@ -54,12 +54,6 @@ config :paddy,
   topic_id: "some-topic"
 ```
 
-- Or if you prefer, you can call the publish method directly, passing the project_id and topic_id parameters as arguments:
-
-```elixir
-Paddy.publish(params, project_id: "custom_project_id", topic_id: "custom_topic_id")
-```
-
 ### Using
 
 > The lib is only responsible to receive the data and publish it to the previously set project_id/topic_id, the list IS NOT responsible to transform and mount the format, this step must be done by the application that will use `paddy`.

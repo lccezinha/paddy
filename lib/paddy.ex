@@ -41,33 +41,15 @@ defmodule Paddy do
       iex> {:ok,%GoogleApi.PubSub.V1.Model.PublishResponse{messageIds: ["422315144637561"]}}
   """
 
-  def publish(data, args \\ []) do
-    project_id = Keyword.get(args, :project_id, @project_id)
-    topic_id = Keyword.get(args, :topic_id, @topic_id)
-    client_email = Keyword.get(args, :client_email)
-    version = Keyword.get(args, :version, :v1)
-
-    encoded_data = encode_data(data, version)
+  def publish(data) do
+    encoded_data = Base.encode64(data)
     message = %Model.PubsubMessage{data: encoded_data}
     data_request = %Model.PublishRequest{messages: [message]}
 
-    Projects.pubsub_projects_topics_publish(get_connection(client_email), project_id, topic_id,
+    Projects.pubsub_projects_topics_publish(get_connection(), @project_id, @topic_id,
       body: data_request
     )
   end
-
-  defp encode_data(data, version) do
-    case version do
-      :v1 ->
-        {:ok, encoded_data} = Poison.encode(data)
-        Base.encode64(encoded_data)
-      :v2 ->
-        Base.encode64(data)
-      _ ->
-        raise ArgumentError, "Unsupported version: #{inspect(version)}"
-    end
-  end
-  
 
   ### Disclaimer!
   #
@@ -77,8 +59,8 @@ defmodule Paddy do
   # We are currently using the lib in version 1.0.1 ~ 27/03/2019.
   #
   # Link for the doc: https://github.com/peburrows/goth/blob/master/lib/goth/token.ex#L3
-  defp get_connection(client_email) do
-    {:ok, token} = Goth.Token.for_scope({client_email, "https://www.googleapis.com/auth/pubsub"})
+  defp get_connection() do
+    {:ok, token} = Goth.Token.for_scope("https://www.googleapis.com/auth/pubsub")
 
     token
     |> Map.get(:token)
